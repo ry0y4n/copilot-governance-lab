@@ -1,0 +1,10 @@
+lockfile_version: '1'
+generated_at: '2026-06-27T08:59:15.814950+00:00'
+dependencies: []
+local_deployed_files:
+- .agents/skills/commit-message-reviewer
+- .agents/skills/commit-message-reviewer/SKILL.md
+- .github/instructions/team-commit.instructions.md
+local_deployed_file_hashes:
+  .agents/skills/commit-message-reviewer/SKILL.md: sha256:27aa8cfbe34ddae40d06855caa84221fbfa2586a2ce7fd9f30cfe6b209703105
+  .github/instructions/team-commit.instructions.md: sha256:fe7452cbd35edf46128a1f8953ee8e353b412d2166c44f62eb9f66b94406d5a1

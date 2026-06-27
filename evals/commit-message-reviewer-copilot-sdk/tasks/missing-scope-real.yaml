@@ -1,0 +1,15 @@
+id: missing-scope-real-001
+name: Missing changed area real model review
+description: |
+    Ask a real GitHub Copilot SDK model to review a vague commit message.
+tags:
+    - real-model
+    - needs-fix
+inputs:
+    prompt: |
+        次の commit message をレビューしてください。
+
+        fix: bug
+expected:
+    outcomes:
+        - type: task_completed

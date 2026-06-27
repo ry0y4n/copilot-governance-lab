@@ -1,0 +1,28 @@
+name: commit-message-reviewer-copilot-sdk-eval
+description: Optional real-model evaluation for commit-message-reviewer.
+skill: commit-message-reviewer
+version: "1.0"
+config:
+    trials_per_task: 1
+    timeout_seconds: 300
+    parallel: false
+    executor: copilot-sdk
+    model: gpt-5.4-mini
+metrics:
+    - name: task_completion
+      weight: 1.0
+      threshold: 0.8
+      description: Did the skill complete the assigned task?
+graders:
+    - type: code
+      name: has_output
+      config:
+          assertions:
+              - "len(output) > 0"
+    - type: text
+      name: review_signal
+      config:
+          regex_match:
+              - "(?i)(needs[- ]?fix|修正版|subject|scope|曖昧|具体|判定)"
+tasks:
+    - "tasks/*.yaml"

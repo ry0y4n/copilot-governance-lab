@@ -1,0 +1,16 @@
+id: non-commit-request-001
+name: Should not trigger for unrelated request
+description: |
+    Confirm that an unrelated request is outside the intended skill boundary.
+tags:
+    - negative
+    - out-of-scope
+inputs:
+    prompt: "明日の天気を教えてください。"
+expected:
+    output_contains:
+        - "Mock response"
+    output_not_contains:
+        - "skill activated"
+    outcomes:
+        - type: task_completed

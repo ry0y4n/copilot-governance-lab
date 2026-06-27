@@ -1,0 +1,17 @@
+id: missing-scope-001
+name: Missing changed area commit message
+description: |
+    Review a vague commit message that should require a changed area and a clearer description.
+tags:
+    - edge-case
+    - needs-fix
+inputs:
+    prompt: |
+        次の commit message をレビューしてください。
+
+        fix: bug
+expected:
+    output_contains:
+        - "Mock response"
+    outcomes:
+        - type: task_completed

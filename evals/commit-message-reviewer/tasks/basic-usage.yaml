@@ -1,0 +1,17 @@
+id: good-commit-001
+name: Good commit message
+description: |
+    Review a commit message that already follows the team rule.
+tags:
+    - basic
+    - happy-path
+inputs:
+    prompt: |
+        次の commit message をレビューしてください。
+
+        docs(readme): add setup steps
+expected:
+    output_contains:
+        - "Mock response"
+    outcomes:
+        - type: task_completed

@@ -1,0 +1,99 @@
+name: GitHub Copilot governance check
+
+on:
+    pull_request:
+        paths:
+            - ".apm/**"
+            - ".agents/skills/**"
+            - ".github/instructions/**"
+            - ".github/workflows/copilot-governance-check.yml"
+            - "apm.yml"
+            - "apm-policy.yml"
+            - "apm.lock.yaml"
+            - ".waza.yaml"
+            - ".gitignore"
+            - "evals/**"
+            - "skills/**"
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    governance:
+        name: Waza and APM checks
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Install Waza CLI
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  curl -fsSL https://raw.githubusercontent.com/microsoft/waza/main/install.sh | bash
+                  echo "$HOME/bin" >> "$GITHUB_PATH"
+
+            - name: Check Waza version
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  mkdir -p results
+                  waza --version | tee results/waza-version.txt
+
+            - name: Run Waza readiness check
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  waza check commit-message-reviewer
+
+            - name: Run Waza evaluations
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  waza run commit-message-reviewer \
+                    --output results/commit-message-reviewer.json \
+                    --reporter junit:results/commit-message-reviewer.xml \
+                    -v
+                  waza coverage . --format markdown > results/waza-coverage.md
+
+            - name: Install APM
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  mkdir -p "$HOME/bin" results
+                  curl -sSL https://aka.ms/apm-unix | APM_INSTALL_DIR="$HOME/bin" sh
+                  echo "$HOME/bin" >> "$GITHUB_PATH"
+                  "$HOME/bin/apm" --version | tee results/apm-version.txt
+
+            - name: Compile APM catalog
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  apm compile --validate --local-only
+
+            - name: Check APM policy status
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  apm policy status --policy-source apm-policy.yml --output json | tee results/apm-policy-status.json
+
+            - name: Run APM audit with policy
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  apm audit --ci --policy apm-policy.yml -f sarif -o results/apm-audit.sarif
+
+            - name: Upload check artifacts
+              uses: actions/upload-artifact@v7
+              with:
+                  name: copilot-governance-results
+                  path: |
+                      results/waza-coverage.md
+                      results/waza-version.txt
+                      results/apm-version.txt
+                      results/commit-message-reviewer.json
+                      results/commit-message-reviewer.xml
+                      results/apm-policy-status.json
+                      results/apm-audit.sarif

@@ -1,4 +1,5 @@
 results/
+results-from-actions/
 .waza-cache/
 coverage.txt
 *.exe
